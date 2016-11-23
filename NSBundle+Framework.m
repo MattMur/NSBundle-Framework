@@ -11,9 +11,13 @@
 @implementation NSBundle (Framework)
 
 + (NSBundle *)bundleForFramework:(NSString *)frameworkName {
-    NSBundle *mainBundle = [NSBundle mainBundle];
-    NSURL *nativoBundleURL = [mainBundle URLForResource:frameworkName withExtension:@"framework" subdirectory:@"Frameworks"];
-    return [NSBundle bundleWithURL:nativoBundleURL];
+    static NSBundle* frameworkBundle = nil;
+    static dispatch_once_t predicate;
+    dispatch_once(&predicate, ^{
+        NSURL *nativoBundleURL = [[NSBundle mainBundle] URLForResource:frameworkName withExtension:@"framework" subdirectory:@"Frameworks"];
+        frameworkBundle = [NSBundle bundleWithURL:nativoBundleURL];
+    });
+    return frameworkBundle;
 }
 
 @end
